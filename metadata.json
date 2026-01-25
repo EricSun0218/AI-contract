@@ -1,0 +1,5 @@
+{
+  "name": "SCAi - Intelligent Contract Review",
+  "description": "An AI-powered contract review platform featuring a Notion-like editor, risk analysis, and smart suggestions.",
+  "requestFramePermissions": []
+}

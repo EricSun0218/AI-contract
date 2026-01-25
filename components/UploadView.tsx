@@ -7,7 +7,7 @@ interface UploadViewProps {
 
 const UploadView: React.FC<UploadViewProps> = ({ onStart }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-0 flex flex-col items-center justify-center h-full w-full relative z-10">
+    <div className="flex-1 overflow-y-auto scrollbar-on-hover p-0 flex flex-col items-center justify-center h-full w-full relative z-10">
       <div className="w-full max-w-[1400px] h-full flex flex-col items-center justify-center px-12 py-8 animate-fade-in-up">
         
         {/* Header */}

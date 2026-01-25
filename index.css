@@ -25,6 +25,22 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* 滚动条仅在滚动时显示，停止后约 0.8s 消失 */
+.scrollbar-on-hover::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+.dark .scrollbar-on-hover::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.scrollbar-on-hover.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+.dark .scrollbar-on-hover.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* Glass Utilities */
 .glass-pane {
   background: rgba(255, 255, 255, 0.65);
@@ -35,4 +51,12 @@ body {
 .dark .glass-pane {
   background: rgba(30, 30, 30, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Word 文档：每页用阴影区分（canvas-editor 的 ce-page-container 下每个 canvas 为一页） */
+.ce-word-doc .ce-page-container > canvas {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.dark .ce-word-doc .ce-page-container > canvas {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
 }

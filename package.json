@@ -9,13 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hufe921/canvas-editor": "^0.9.123",
+    "@hufe921/canvas-editor-plugin-docx": "^0.0.5",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "@hufe921/canvas-editor": "2.2.14"
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

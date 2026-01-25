@@ -1,5 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
+import Editor from '@hufe921/canvas-editor';
+import docxPlugin from '@hufe921/canvas-editor-plugin-docx';
 import { GlassPane, LiquidButton } from './GlassUI';
 import { RiskItem, ContractFile } from '../types';
 
@@ -57,57 +58,66 @@ const CONTRACT_DATA = [
 
 const EditorView: React.FC<EditorViewProps> = ({ file, risks }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<any>(null); // Use any to avoid static type dependency
+  const editorRef = useRef<InstanceType<typeof Editor> | null>(null);
+  const docxInputRef = useRef<HTMLInputElement>(null);
   const [isReady, setIsReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [docxExporting, setDocxExporting] = useState(false);
+  const [docxImporting, setDocxImporting] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    let editorInstance: any = null;
+    let editorInstance: InstanceType<typeof Editor> | null = null;
 
-    const initEditor = async () => {
+    const initEditor = () => {
       try {
-        // Dynamic import to prevent app crash if module resolution fails
-        const module = await import('@hufe921/canvas-editor');
-        // Handle both default export and named export patterns
-        const EditorClass = module.default || module.Editor;
-
-        if (!EditorClass) {
-          throw new Error("Could not load Editor class from module");
-        }
-
-        editorInstance = new EditorClass(containerRef.current, {
-          main: CONTRACT_DATA,
-        }, {
-          margins: [100, 100, 100, 100], // Page margins
-          watermark: {
-            data: 'SCAi Review',
-            color: 'rgba(200, 200, 200, 0.2)',
-            size: 24
-          },
-          pageNumber: {
-            format: '{pageNo}/{pageCount}',
-          }
+        editorInstance = new Editor(containerRef.current!, { main: CONTRACT_DATA }, {
+          margins: [100, 100, 100, 100],
+          watermark: { data: 'SCAi Review', color: 'rgba(200, 200, 200, 0.2)', size: 24 },
+          pageNumber: { format: '{pageNo}/{pageCount}' },
         });
-
+        editorInstance.use(docxPlugin);
         editorRef.current = editorInstance;
         setIsReady(true);
-        console.log('Editor initialized:', editorInstance);
       } catch (err) {
-        console.error("Failed to load canvas-editor:", err);
-        setLoadError(err instanceof Error ? err.message : "Failed to load editor resources");
+        console.error('Failed to load canvas-editor:', err);
+        setLoadError(err instanceof Error ? err.message : 'Failed to load editor');
       }
     };
 
     initEditor();
-
     return () => {
-      if (editorInstance && editorInstance.destroy) {
-        editorInstance.destroy();
-      }
+      editorInstance?.destroy?.();
+      editorRef.current = null;
     };
   }, []);
+
+  const handleImportDocx = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = '';
+    if (!f || !editorRef.current?.command?.executeImportDocx) return;
+    setDocxImporting(true);
+    try {
+      const arrayBuffer = await f.arrayBuffer();
+      await (editorRef.current.command as { executeImportDocx: (o: { arrayBuffer: ArrayBuffer }) => Promise<void> }).executeImportDocx({ arrayBuffer });
+    } catch (err) {
+      console.error('导入 Word 失败:', err);
+    } finally {
+      setDocxImporting(false);
+    }
+  };
+
+  const handleExportDocx = () => {
+    if (!editorRef.current?.command?.executeExportDocx) return;
+    setDocxExporting(true);
+    try {
+      const fileName = file?.name?.replace(/\.(pdf|doc)$/i, '.docx') || '合同.docx';
+      (editorRef.current.command as { executeExportDocx: (o: { fileName: string }) => void }).executeExportDocx({ fileName });
+    } finally {
+      setDocxExporting(false);
+    }
+  };
 
   const handleRiskClick = (risk: RiskItem) => {
     if (!editorRef.current) return;
@@ -170,6 +180,31 @@ const EditorView: React.FC<EditorViewProps> = ({ file, risks }) => {
               <button onClick={() => editorRef.current?.command?.executeUnderline()} className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded"><span className="material-symbols-outlined text-lg underline">format_underlined</span></button>
            </div>
            <div className="flex-1"></div>
+           <div className="flex items-center gap-2">
+              <input
+                ref={docxInputRef}
+                type="file"
+                accept=".docx,.doc"
+                className="hidden"
+                onChange={handleImportDocx}
+              />
+              <button
+                onClick={() => docxInputRef.current?.click()}
+                disabled={!isReady || docxImporting}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium bg-white/60 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-base">upload_file</span>
+                {docxImporting ? '导入中...' : '导入 Word'}
+              </button>
+              <button
+                onClick={handleExportDocx}
+                disabled={!isReady || docxExporting}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium bg-white/60 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-base">download</span>
+                {docxExporting ? '导出中...' : '导出 Word'}
+              </button>
+           </div>
            <div className="text-xs text-slate-400">
               {loadError ? <span className="text-red-500">{loadError}</span> : (isReady ? '编辑器已就绪' : '初始化中...')}
            </div>

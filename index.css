@@ -60,3 +60,34 @@ body {
 .dark .ce-word-doc .ce-page-container > canvas {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+/* 一键修复按钮斜着移动的高光效果 */
+.shine-highlight {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 70%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  width: 150%;
+  height: 100%;
+  animation: shine-sweep 2.5s linear infinite;
+  pointer-events: none;
+}
+
+/* 禁用状态下隐藏高光 */
+button:disabled .shine-highlight {
+  display: none;
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-20deg);
+  }
+}

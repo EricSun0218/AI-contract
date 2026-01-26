@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 
 export const GlassPane: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = '' }) => (
@@ -12,7 +11,8 @@ export const LiquidButton: React.FC<{
   onClick?: () => void; 
   className?: string;
   variant?: 'primary' | 'danger' | 'success';
-}> = ({ children, onClick, className = '', variant = 'primary' }) => {
+  disabled?: boolean;
+}> = ({ children, onClick, className = '', variant = 'primary', disabled = false }) => {
   let bgClass = "bg-gradient-to-br from-[#007AFF] to-[#5856D6]";
   let shadowClass = "shadow-blue-500/30 hover:shadow-blue-500/50";
 
@@ -21,14 +21,20 @@ export const LiquidButton: React.FC<{
     shadowClass = "shadow-red-500/30 hover:shadow-red-500/50";
   }
 
+  if (disabled) {
+    bgClass = "bg-gradient-to-br from-slate-400 to-slate-500";
+    shadowClass = "shadow-slate-400/20";
+  }
+
   return (
-    <button 
-      onClick={onClick}
+    <button
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={`
         ${bgClass} ${shadowClass}
-        text-white font-medium rounded-[16px] transition-all duration-300
-        transform hover:-translate-y-0.5 active:scale-95 active:translate-y-0
-        shadow-lg flex items-center justify-center gap-2
+        text-white font-medium rounded-[16px]
+        ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95'}
+        shadow-lg flex items-center justify-center gap-2 transition-all
         ${className}
       `}
     >
@@ -38,13 +44,14 @@ export const LiquidButton: React.FC<{
 };
 
 export const IconButton: React.FC<{ icon: string; onClick?: () => void; className?: string; active?: boolean }> = ({ icon, onClick, className = '', active = false }) => (
-  <button 
+  <button
     onClick={onClick}
     className={`
-      p-2 rounded-lg transition-colors flex items-center justify-center
+      p-2 rounded-lg flex items-center justify-center transition-transform
+      hover:scale-110 active:scale-90
       ${active 
         ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' 
-        : 'hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300'}
+        : 'text-slate-600 dark:text-slate-300'}
       ${className}
     `}
   >

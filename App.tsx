@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import UploadView from './components/UploadView';
@@ -97,6 +96,7 @@ const MOCK_CLAUSE_RISKS: ClauseRisk[] = [
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('upload');
   const [activeFile, setActiveFile] = useState<ContractFile>(MOCK_FILES[0]);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   // Dark mode initialization
   useEffect(() => {
@@ -126,28 +126,55 @@ const App: React.FC = () => {
     };
   }, []);
 
+  const handleFileSelect = (file: File) => {
+    setUploadedFile(file);
+    // 创建 ContractFile 对象
+    const contractFile: ContractFile = {
+      id: Date.now().toString(),
+      name: file.name,
+      date: new Date().toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      status: 'processing',
+      type: file.name.endsWith('.pdf') ? 'pdf' : 'doc',
+    };
+    setActiveFile(contractFile);
+  };
+
+  const handleStart = () => {
+    if (uploadedFile) {
+      setCurrentView('editor');
+    }
+  };
+
   return (
     <div className="font-sans h-screen flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 transition-colors duration-200">
       
       {/* Dynamic Background */}
       <div className="fixed inset-0 z-0 bg-[#F2F2F7] dark:bg-[#000000]">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-300/30 dark:bg-blue-600/20 blur-[120px] animate-blob"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-300/30 dark:bg-indigo-600/20 blur-[120px] animate-blob animation-delay-2000"></div>
-        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-purple-200/30 dark:bg-purple-800/20 blur-[100px] animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-300/30 dark:bg-blue-600/20 blur-[120px] animate-blob" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-300/30 dark:bg-indigo-600/20 blur-[120px] animate-blob" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-purple-200/30 dark:bg-purple-800/20 blur-[100px] animate-blob" style={{ animationDelay: '4s' }} />
       </div>
 
       <div className="flex flex-1 w-full h-full relative z-10 overflow-hidden">
         <Sidebar 
           files={MOCK_FILES} 
-          onNewTask={() => setCurrentView('upload')} 
+          onNewTask={() => {
+            setCurrentView('upload');
+            setUploadedFile(null);
+          }} 
           currentView={currentView}
         />
         
         {currentView === 'upload' ? (
-          <UploadView onStart={() => setCurrentView('editor')} />
+          <UploadView 
+            key={currentView}
+            onFileSelect={handleFileSelect}
+            onStart={handleStart} 
+          />
         ) : (
           <EditorView 
             file={activeFile}
+            uploadedFile={uploadedFile || undefined}
             clauseRisks={MOCK_CLAUSE_RISKS} 
           />
         )}

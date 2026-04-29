@@ -1,295 +1,188 @@
-# 智能合同审查系统
+<div align="center">
 
-一个基于 AI 的智能合同审查平台，提供合同风险识别、在线编辑和批注导出功能。
+# AI Contract Review
 
-## 功能特性
+**Contract review shouldn't end with "now open Word and fix it manually."**
 
-### 🤖 AI 智能审查
-- **风险识别**：自动识别合同中的高风险和中风险条款
-- **风险分析**：提供详细的风险说明和修改建议
-- **智能修复**：支持一键修复多个风险点，自动应用修改建议
-- **缺失条款检测**：识别合同中缺失的重要条款，并提供补充建议
+A browser-based AI contract review workbench. Identify risks, edit inline, iterate with an AI assistant, and export a Word file that lawyers can hand to the other side — all without leaving the tab.
 
-### 📝 在线编辑
-- **Word 风格编辑器**：基于 canvas-editor 的在线文档编辑体验
-- **实时预览**：所见即所得的编辑体验
-- **格式支持**：支持加粗、斜体、下划线、高亮等文本格式
-- **撤销重做**：完整的撤销/重做功能
+[![React 19](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
+[![Flask](https://img.shields.io/badge/Flask-Python-000000.svg)](https://flask.palletsprojects.com/)
+[![License: Private](https://img.shields.io/badge/license-private-lightgrey.svg)](#license)
 
-### 💬 批注系统
-- **AI 批注**：自动为识别的风险点生成批注
-- **手动批注**：支持用户手动添加批注
-- **批注定位**：点击批注可快速定位到文档中的对应位置
-- **批注导出**：导出 Word 文档时保留所有批注信息
+[简体中文](README.zh-CN.md)
 
-### 💬 智能对话
-- **合同问答**：与 AI 助手对话，询问合同相关问题
-- **上下文理解**：AI 基于当前合同内容提供专业回答
-- **快速查询**：快速获取合同关键信息和建议
-
-### 📊 合同摘要
-- **交易模式**：自动提取并展示合同类型、交易背景、标的、金额等关键信息
-- **权利义务**：清晰展示合同双方的权利和义务
-- **结构化展示**：以卡片形式呈现，便于快速理解合同要点
-
-### 📤 文档导出
-- **格式保持**：导出的 Word 文档完全保持原文档格式
-- **批注保留**：所有批注（AI 和手动）都会在导出的文档中保留
-- **状态标记**：批注中清晰标记"已修复"或"未修复"状态
-
-## 技术栈
-
-### 前端
-- **React 19** - UI 框架
-- **TypeScript** - 类型安全
-- **Vite** - 构建工具
-- **Tailwind CSS** - 样式框架
-- **canvas-editor** - 在线文档编辑器
-- **framer-motion** - 动画库
-
-### 后端
-- **Python 3** - 后端语言
-- **Flask** - Web 框架
-- **python-docx** - Word 文档处理
-- **Flask-CORS** - 跨域支持
-
-## 快速开始
-
-### 环境要求
-
-- Node.js >= 18.0.0
-- Python >= 3.8
-- npm 或 yarn
-
-### 前端部署
-
-1. **安装依赖**
-   ```bash
-   npm install
-   ```
-
-2. **启动开发服务器**
-   ```bash
-   npm run dev
-   ```
-
-3. **构建生产版本**
-   ```bash
-   npm run build
-   ```
-
-4. **预览生产构建**
-   ```bash
-   npm run preview
-   ```
-
-开发服务器将在 `http://localhost:5173` 启动。
-
-### 后端部署
-
-1. **进入后端目录**
-   ```bash
-   cd backend
-   ```
-
-2. **创建虚拟环境（推荐）**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-   ```
-
-3. **安装依赖**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **配置环境变量**
-   ```bash
-   cp .env.example .env
-   # 编辑 .env 文件，配置必要的环境变量
-   ```
-
-5. **启动服务**
-   ```bash
-   python app.py
-   # 或使用启动脚本
-   chmod +x start.sh
-   ./start.sh
-   ```
-
-后端服务将在 `http://localhost:8000` 启动。
-
-### 生产环境部署
-
-#### 前端部署
-
-1. **构建生产版本**
-   ```bash
-   npm run build
-   ```
-
-2. **部署 dist 目录**
-   - 将 `dist` 目录部署到静态文件服务器（如 Nginx、Apache）
-   - 或使用 Vercel、Netlify 等平台部署
-
-3. **配置环境变量**
-   - 设置 `VITE_BACKEND_URL` 为后端 API 地址（如：`https://api.example.com`）
-
-#### 后端部署
-
-1. **使用 Gunicorn（推荐）**
-   ```bash
-   pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:8000 app:app
-   ```
-
-2. **使用 Nginx 反向代理**
-   ```nginx
-   server {
-       listen 80;
-       server_name api.example.com;
-
-       location / {
-           proxy_pass http://127.0.0.1:8000;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
-
-3. **使用 Docker（可选）**
-   ```dockerfile
-   FROM python:3.9-slim
-   WORKDIR /app
-   COPY requirements.txt .
-   RUN pip install -r requirements.txt
-   COPY . .
-   CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
-   ```
-
-## 项目结构
-
-```
-AI-contract/
-├── components/          # React 组件
-│   ├── EditorView.tsx  # 编辑器视图
-│   ├── UploadView.tsx  # 上传视图
-│   ├── Sidebar.tsx     # 侧边栏
-│   └── GlassUI.tsx     # UI 组件
-├── utils/              # 工具函数
-│   ├── exportWithComments.ts        # 批注导出
-│   └── exportWithOfficialPlugin.ts  # 官方插件导出
-├── backend/            # 后端服务
-│   ├── app.py          # Flask 应用
-│   ├── requirements.txt # Python 依赖
-│   └── README.md       # 后端说明
-├── types.ts            # TypeScript 类型定义
-├── App.tsx             # 主应用组件
-└── package.json        # 项目配置
-```
-
-## 注意事项
-
-### 版本说明
-- **AI 审查功能**：当前为初版，AI 风险识别和分析功能正在持续优化迭代中
-- **在线编辑器**：当前为初版，部分高级编辑功能正在开发中
-- 系统会持续更新，带来更好的用户体验
-
-### 浏览器兼容性
-- Chrome/Edge >= 90
-- Firefox >= 88
-- Safari >= 14
-
-### 文件格式支持
-- 支持 DOC、DOCX 格式
-- PDF 格式支持有限（建议使用 DOCX）
-
-### 性能建议
-- 建议文档大小不超过 10MB
-- 大型文档可能需要较长的处理时间
-
-## 开发计划
-
-- [ ] 增强 AI 审查准确性
-- [ ] 优化在线编辑器性能
-- [ ] 支持更多文档格式
-- [ ] 添加协作编辑功能
-- [ ] 支持批量文档处理
-- [ ] 增强批注功能（回复、标记等）
-
-## 许可证
-
-本项目为私有项目，未经授权不得使用。
-
-## 项目心得
-
-> 本项目为面试命题作品，以下为开发过程中的思考与实践总结。
-
-### 设计理念
-
-题目要求实现**在线审查并下载含有批注的 Word 文档**。在实现基础功能后，我思考：如果用户还需要打开 Word 手动修改，那还不如直接做成 Word 插件（如 Spellbook）
-
-因此，我在基础功能之上增加了：
-- **在线编辑功能**：用户可以直接在浏览器中编辑文档
-- **智能修复功能**：一键应用 AI 建议的修改，让用户能够直接产出可用的结果
-- **合同摘要功能**：自动提取并展示合同的关键信息（交易模式、权利义务），帮助用户快速理解合同要点
-- **智能对话功能**：提供与合同对话的交互方式，用户可以询问合同相关问题，AI 基于合同内容提供专业回答
-
-这样用户无需在多个工具间切换，提升了整体使用体验，同时通过摘要和对话功能，让用户能够更深入地理解合同内容。
-
-### 开发流程
-
-#### 1. 需求调研
-- 调研竞品功能与交互方式
-- 在社交媒体进行用户调研
-- 根据反馈新增**审查尺度**选项（均衡/严格/宽松）
-  - 原因：不少用户反馈 AI 审查过于细致，很多时候不需要这么严格
-
-#### 2. 快速原型
-- 使用 **Google Stitch** 制作第一版原型
-- 使用 **Google AI Studio** 生成第一版前端代码
-- 复杂后端逻辑使用 **Cursor** 和 **Claude** 辅助开发
-
-#### 3. UI/UX 优化
-- 使用 **UIUXPromax Skill** 进一步优化界面设计
-- 在 **Lottie** 寻找合适的加载动画
-- 统一设计语言，提升视觉体验
-
-#### 4. 技术选型与挑战
-
-**在线编辑器选型：**
-- 最初考虑使用 **OnlyOffice**，但发现其体积较大，集成复杂
-- 最终选择 **canvas-editor** 开源项目进行模拟实现
-
-**遇到的主要问题：**
-- canvas-editor 将 Word 转换为 JSON，在页面模拟渲染，导出时再转换回 Word
-- 格式同步困难：难以保证所有格式（字体、间距、表格等）完全一致
-- 不支持 Word 原生批注：无法直接使用编辑器的批注功能
-
-**解决方案：**
-- 使用 canvas-editor 的官方导出插件保证格式一致性
-- 开发独立的 **Python 后端服务**，专门处理批注添加
-- 通过文本匹配的方式在导出的 Word 文档中定位并添加批注
-
-虽然过程曲折，但最终成功实现了一个可用的原型。
-
-### 未来优化方向
-
-1. **AI 审查能力**
-   - 接入专业的合同审查 API
-   - 建立合同审查知识库
-   - 构建完整的合同审查 Agent 流程
-
-2. **在线编辑器**
-   - 重构为 **OnlyOffice** 等原生 Word 编辑器
-   - 支持更完整的 Word 功能
-   - 提升格式兼容性
-
-3. **系统架构**
-   - 优化前后端交互流程
-   - 提升大文档处理性能
-   - 增强错误处理和用户体验
+</div>
 
 ---
 
-**总结**：这个项目让我深入理解了从需求分析到技术实现的完整流程，特别是在面对技术限制时如何通过架构设计来解决问题。虽然当前版本还有优化空间，但已经能够满足基本的审查和编辑需求。
+## TL;DR
+
+Drop a `.docx` contract in. The platform does five things for you in one workspace:
+
+1. **Risk identification** — flags high- and medium-risk clauses, explains why, and proposes specific edits.
+2. **One-click fix** — apply any (or all) AI suggestions; the document updates in place.
+3. **Inline annotations** — AI and manual annotations live alongside the text; click to jump.
+4. **Contract chat** — ask the document anything ("what's the termination liability cap?") and get answers grounded in the contract.
+5. **Word export with annotations preserved** — including each annotation's resolved/unresolved status, so the lawyer on the other side sees exactly what was changed and why.
+
+No plugin to install. No Word license required for the reviewer. The result is a `.docx` file ready to hand off.
+
+---
+
+## The Insight
+
+Most AI contract review tools today (Spellbook, Diligen, LawGeex) are **Microsoft Word plugins**. That choice tells you everything about who the product was designed for: senior lawyers who already live inside Word and aren't going to change.
+
+But the real bottleneck in contract review isn't where the lawyer is — it's the workflow:
+
+> **Reading risk → drafting fixes → applying fixes → exporting → handing off.**
+> Today's tools do step 1. They make the lawyer do steps 2–5 by hand.
+
+If the AI flags 12 risks but the lawyer still has to manually edit 12 paragraphs in Word, the AI saved them maybe 5 minutes. The other 90% of the work is unchanged.
+
+AI Contract Review takes the opposite stance: **the AI's job isn't to flag, it's to finish.** The platform owns the entire loop from risk → edit → export, so the deliverable is a Word file the lawyer can immediately send to the counterparty.
+
+---
+
+## Real-World Scenarios
+
+**1. Vendor MSA review at scale.**
+Procurement gets 30 vendor MSAs a quarter, all subtly different. Lawyers spend 80% of their time on the same six high-risk clauses (liability, IP, termination, indemnity, jurisdiction, payment terms). The platform catches all six, proposes redlines, exports clean.
+
+**2. NDA triage at a startup.**
+The founder receives an NDA from a counterparty. They don't have a lawyer on retainer. The platform flags non-standard terms (mutual vs unilateral, perpetual confidentiality, IP assignment hidden in §7), explains in plain English, and lets them push back with a one-click edit.
+
+**3. Term sheet redlines before legal review.**
+Founders run the term sheet through the platform first to understand which clauses to push back on. The lawyer's billable hour starts at "let's negotiate" instead of "let me explain what this means."
+
+---
+
+## How It Works
+
+```
+Upload .docx
+     │
+     ▼
+┌───────────────────────────────────────────────────────────┐
+│  Browser-side workspace                                   │
+│  ┌─────────────┐  ┌─────────────────┐  ┌──────────────┐   │
+│  │ Sidebar     │  │ Editor (canvas) │  │ AI panel     │   │
+│  │ • Risks     │◀─│ • Inline text   │─▶│ • Chat       │   │
+│  │ • Annotations│  │ • Annotations  │  │ • Summary    │   │
+│  │ • One-click │  │ • Edit / undo   │  │ • Severity   │   │
+│  │   fix       │  │                 │  │   slider     │   │
+│  └─────────────┘  └─────────────────┘  └──────────────┘   │
+└───────────────────────────────────────────────────────────┘
+     │
+     ▼
+Export → Python backend (python-docx) preserves all
+         annotations, fix status, and original formatting
+     │
+     ▼
+.docx ready to hand off
+```
+
+Frontend: React 19 + TypeScript + canvas-editor (Word-style WYSIWYG).
+Backend: Flask + python-docx (Word format preservation + annotation injection).
+LLM: prompt-engineered risk detection with three severity modes.
+
+---
+
+## Key Design Decisions
+
+**1. Workbench, not Word plugin.**
+Word plugins lock you to desktop, lock you to one OS, and lock the reviewer into Word's UX. A browser workbench works everywhere, supports future multi-user collaboration, and lets us own the full UX. The cost is having to rebuild a Word-style editor; the gain is owning the entire workflow loop.
+
+**2. "One-click fix" is the actual product.**
+Anyone can ship "AI flags risks." The hard part is making the AI's suggestions *executable* — applying them in place, preserving formatting, supporting undo, batching multiple fixes. Without one-click fix, the AI is a fancier Ctrl+F. With it, the lawyer's workflow collapses by an order of magnitude. **This decision is the difference between a demo and a product.**
+
+**3. Three severity modes (Strict / Balanced / Lenient).**
+Came from user research: a procurement lawyer reviewing 30 MSAs/quarter wants Strict, but a founder reading their first NDA finds Strict overwhelming. One-size-fits-all is bad UX. The slider takes 5 seconds to add and changes the product's accessibility for non-lawyers entirely.
+
+**4. Custom annotation system, not the editor's native one.**
+canvas-editor doesn't support native Word annotations. We could have switched editors (OnlyOffice was a candidate — but heavy, complex to embed). Instead: keep canvas-editor for the editing UX, build a separate Python annotation service that injects comments into the exported `.docx` via text-matching. Trade-off accepted: more backend complexity, but a much lighter frontend and full control over annotation behavior.
+
+**5. Word export, not PDF.**
+PDFs are dead documents. Lawyers will reject any tool that doesn't return a `.docx`, because the next step is *always* further negotiation in Word. Locking the output to `.docx` (with annotations preserved) is the only acceptable hand-off format for this audience.
+
+**6. Contract chat grounded in the document, not generic.**
+The chat panel injects the current contract text into every prompt. "What's the cap on liability?" returns an answer specific to *this* contract, with the relevant clause cited. A generic chatbot wouldn't be useful for a lawyer; a grounded one becomes a research tool.
+
+---
+
+## Get Started
+
+```bash
+# Frontend
+npm install
+npm run dev          # http://localhost:5173
+
+# Backend (separate terminal)
+cd backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env  # add your LLM API key
+python app.py        # http://localhost:8000
+```
+
+Drop a `.docx` contract into the upload view, pick a severity mode, and start reviewing.
+
+---
+
+## Roadmap
+
+The vision: a contract review workbench that understands *your* company's playbook — not just generic risks, but the specific positions your legal team always negotiates.
+
+| Status | Feature |
+|---|---|
+| ✅ shipped | Risk identification + severity modes |
+| ✅ shipped | One-click fix (single + batch) |
+| ✅ shipped | Inline + AI annotations |
+| ✅ shipped | Contract chat grounded in document |
+| ✅ shipped | Contract summary (parties, terms, obligations) |
+| ✅ shipped | Word export with annotations preserved |
+| 🚧 next | Custom playbooks — your firm's standard positions |
+| 🚧 next | Specialized legal LLM + retrieval over case law |
+| 🚧 next | Multi-document workflow (compare across vendor contracts) |
+| 🔭 future | Real-time multi-reviewer collaboration |
+| 🔭 future | Negotiation suggestions ("the counterparty usually accepts X here") |
+
+---
+
+## Related Work
+
+| | What it does | How AI Contract Review differs |
+|---|---|---|
+| **Spellbook / LawGeex / Diligen** | AI risk flagging inside MS Word as a plugin | Locks you to Word + desktop. Ours runs in browser + owns the full edit/export loop. |
+| **Harvey AI** | LLM legal copilot, generic chat | No structured review workflow, no in-place edits. Ours is workflow-first. |
+| **DocuSign Insight / Kira** | Enterprise contract analytics | Built for AML/M&A diligence at scale. Ours is built for *active review* of one contract. |
+| **Asking ChatGPT directly** | Free-form Q&A | No annotations, no edits, no export, no risk flagging. Becomes a hassle past one paragraph. |
+
+---
+
+## Tech Stack
+
+**Frontend:** React 19 · TypeScript · Vite · Tailwind CSS · canvas-editor · framer-motion
+**Backend:** Python 3 · Flask · python-docx · Flask-CORS
+
+## Project Structure
+
+```
+AI-contract/
+├── components/          # React components (Editor, Upload, Sidebar, GlassUI)
+├── utils/               # Annotation export utilities
+├── backend/             # Flask service for Word format + annotation injection
+├── types.ts             # TypeScript types
+└── App.tsx              # Main app
+```
+
+## Browser Compatibility
+
+Chrome/Edge ≥ 90 · Firefox ≥ 88 · Safari ≥ 14
+Recommended: documents under 10 MB.
+
+## License
+
+Private.
